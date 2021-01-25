@@ -32,12 +32,11 @@
                 v-for="(color, index) in colors"
                 :style="setStyles(color)"
                 :key="index"
-                :id="colorName(color).substring(1)"
                 @click="copyColor(colorName(color))"
             >
                 <input
                     type="hidden"
-                    id="testing-code"
+                    :id="colorName(color).substring(1)"
                     :value="colorName(color).substring(1)"
                 />
                 {{ colorName(color) }}
@@ -45,9 +44,11 @@
         </div>
 
         <div class="logs">
-            <div class="log" v-for="(log, index) in logs" :key="index">
-                {{ log }}
-            </div>
+            <transition-group name="list" tag="div" appear>
+                <div class="log" v-for="(log, index) in logs" :key="index">
+                    {{ log }}
+                </div>
+            </transition-group>
         </div>
     </div>
 </template>
@@ -63,7 +64,7 @@ export default {
             delta: 10,
             color1: '#FD6B42',
             color2: '#E342FD',
-            logs: ['copied', 'copied', 'copied'],
+            logs: [],
         }
     },
     mixins: [functions],
@@ -89,16 +90,24 @@ export default {
         colorName(color) {
             return this.rgbArrayToHex(color)
         },
-        copyColor() {
-            let testingCodeToCopy = document.querySelector('#testing-code')
-            testingCodeToCopy.setAttribute('type', 'text') // 不是 hidden 才能複製
+        copyColor(color) {
+            let testingCodeToCopy = document.getElementById(
+                `${color.substring(1)}`
+            )
+
+            testingCodeToCopy.setAttribute('type', 'text')
             console.log(testingCodeToCopy)
             testingCodeToCopy.select()
 
+            console.log(testingCodeToCopy)
+            console.log(testingCodeToCopy.select())
+
             try {
                 var successful = document.execCommand('copy')
-                var msg = successful ? 'successful' : 'unsuccessful'
-                alert('Testing code was copied ' + msg)
+
+                if (successful) {
+                    this.logs.push(`The color ${color} has been copied!`)
+                }
             } catch (err) {
                 alert('Oops, unable to copy')
             }
@@ -107,6 +116,13 @@ export default {
             testingCodeToCopy.setAttribute('type', 'hidden')
             window.getSelection().removeAllRanges()
         },
+    },
+    mounted() {
+        if (this.logs) {
+            setInterval(() => {
+                this.logs.shift()
+            }, 5000)
+        }
     },
 }
 </script>
@@ -302,5 +318,28 @@ input {
         transition: 300ms linear;
         cursor: pointer;
     }
+}
+
+.logs {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+}
+
+.log {
+    padding: 1rem 2rem;
+    font-size: 1.4rem;
+    background-color: lightgray;
+    border-radius: 0.5rem;
+    margin: 1rem;
+}
+
+.list-enter-active,
+.list-leave-active {
+    transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+    opacity: 0;
+    transform: translateX(30px);
 }
 </style>
