@@ -1,6 +1,10 @@
 <template>
     <div class="app">
         <div class="tools">
+            <h1>
+                Color Steps : choose 2 colors and the number of steps between
+                them. Click on the color to add it to the clipboard.
+            </h1>
             <div class="tools__first-color">
                 <input type="color" v-model="color1" />
                 <input type="text" v-model="color1" />
@@ -28,8 +32,21 @@
                 v-for="(color, index) in colors"
                 :style="setStyles(color)"
                 :key="index"
+                :id="colorName(color).substring(1)"
+                @click="copyColor(colorName(color))"
             >
-                &nbsp;{{ colorName(color) }}
+                <input
+                    type="hidden"
+                    id="testing-code"
+                    :value="colorName(color).substring(1)"
+                />
+                {{ colorName(color) }}
+            </div>
+        </div>
+
+        <div class="logs">
+            <div class="log" v-for="(log, index) in logs" :key="index">
+                {{ log }}
             </div>
         </div>
     </div>
@@ -46,6 +63,7 @@ export default {
             delta: 10,
             color1: '#FD6B42',
             color2: '#E342FD',
+            logs: ['copied', 'copied', 'copied'],
         }
     },
     mixins: [functions],
@@ -71,6 +89,24 @@ export default {
         colorName(color) {
             return this.rgbArrayToHex(color)
         },
+        copyColor() {
+            let testingCodeToCopy = document.querySelector('#testing-code')
+            testingCodeToCopy.setAttribute('type', 'text') // 不是 hidden 才能複製
+            console.log(testingCodeToCopy)
+            testingCodeToCopy.select()
+
+            try {
+                var successful = document.execCommand('copy')
+                var msg = successful ? 'successful' : 'unsuccessful'
+                alert('Testing code was copied ' + msg)
+            } catch (err) {
+                alert('Oops, unable to copy')
+            }
+
+            /* unselect the range */
+            testingCodeToCopy.setAttribute('type', 'hidden')
+            window.getSelection().removeAllRanges()
+        },
     },
 }
 </script>
@@ -87,6 +123,7 @@ $bg: #2c3e50;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .tools {
@@ -96,9 +133,20 @@ $bg: #2c3e50;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    flex: 0 0 30%;
 
     @media only screen and (max-width: 900px) {
         flex-direction: column;
+        padding: 0;
+    }
+
+    & h1 {
+        font-size: 2.5rem;
+        position: absolute;
+        text-align: center;
+        top: 3%;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     &__first-color,
@@ -246,12 +294,13 @@ input {
         flex: 1;
         display: flex;
         align-items: center;
-        padding: 0 2rem;
+        justify-content: center;
         text-align: center;
         font-size: 4rem;
         margin: 0 auto;
         width: 100vw;
         transition: 300ms linear;
+        cursor: pointer;
     }
 }
 </style>
