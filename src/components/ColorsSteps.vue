@@ -97,11 +97,7 @@ export default {
             )
 
             testingCodeToCopy.setAttribute('type', 'text')
-            console.log(testingCodeToCopy)
             testingCodeToCopy.select()
-
-            console.log(testingCodeToCopy)
-            console.log(testingCodeToCopy.select())
 
             try {
                 var successful = document.execCommand('copy')
