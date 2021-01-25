@@ -3,7 +3,8 @@
         <div class="tools">
             <h1>
                 Color Steps : choose 2 colors and the number of steps between
-                them. Click on the color to add it to the clipboard.
+                them. <br />
+                Click on the color to add it to the clipboard.
             </h1>
             <div class="tools__first-color">
                 <input type="color" v-model="color1" />
@@ -160,7 +161,8 @@ $bg: #2c3e50;
         font-size: 2.5rem;
         position: absolute;
         text-align: center;
-        top: 3%;
+        width: 90%;
+        top: 2%;
         left: 50%;
         transform: translateX(-50%);
     }
