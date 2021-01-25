@@ -13,27 +13,64 @@
                     v-model="steps"
                     class="tools__range-input"
                 />
-                <div class="tools__steps">{{ steps }} Steps</div>
+                <div class="tools__steps">
+                    {{ visualSteps }} {{ stepsLabel }}
+                </div>
             </div>
             <div class="tools__second-color">
                 <input type="color" v-model="color2" />
                 <input type="text" v-model="color2" />
             </div>
         </div>
-        <div class="colors"></div>
+        <div class="colors">
+            <div
+                class="colors__color"
+                v-for="(color, index) in colors"
+                :style="setStyles(color)"
+                :key="index"
+            >
+                &nbsp;{{ colorName(color) }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import functions from '../mixins/functions'
 export default {
     data() {
         return {
             min: 3,
-            max: 25,
+            max: 15,
             steps: 5,
+            delta: 10,
             color1: '#FD6B42',
             color2: '#E342FD',
         }
+    },
+    mixins: [functions],
+    computed: {
+        visualSteps() {
+            return this.steps - 2
+        },
+        stepsLabel() {
+            return this.visualSteps === 1 ? 'step' : 'steps'
+        },
+        colors() {
+            return this.interpolateColors(this.color1, this.color2, this.steps)
+        },
+    },
+    methods: {
+        adjust(color) {
+            const hex = this.rgbToHex(color[0], color[1], color[2])
+            return this.foregroundAdjust(hex)
+        },
+        setStyles(color) {
+            return `background: rgb(${color}); color: ${this.adjust(color)}`
+        },
+        colorName(color) {
+            return this.rgbArrayToHex(color)
+        },
     },
 }
 </script>
@@ -41,14 +78,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 $fg: #fff;
-$bg: #000;
+$bg: #2c3e50;
 
 .app {
     height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -59,6 +96,10 @@ $bg: #000;
     display: flex;
     justify-content: space-around;
     align-items: center;
+
+    @media only screen and (max-width: 900px) {
+        flex-direction: column;
+    }
 
     &__first-color,
     &__second-color {
@@ -91,6 +132,11 @@ input {
     border-radius: 0 1em 1em 0;
     background-color: #eee;
     cursor: pointer;
+
+    @media only screen and (max-width: 900px) {
+        margin: 3rem 0;
+        padding: 0;
+    }
 
     &[type='color'] {
         padding: 0;
@@ -189,16 +235,22 @@ input {
 }
 
 .colors {
-    flex: 2;
+    width: 100%;
+    flex: 0 0 70%;
     display: flex;
     flex-direction: column;
     font-size: 0.85em;
+    text-align: center;
 
-    .color {
+    &__color {
         flex: 1;
         display: flex;
         align-items: center;
-        padding: 0 1em;
+        padding: 0 2rem;
+        text-align: center;
+        font-size: 4rem;
+        margin: 0 auto;
+        width: 100vw;
         transition: 300ms linear;
     }
 }

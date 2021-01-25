@@ -22,6 +22,10 @@ export default {
 
 html {
     font-size: 62.5%;
+
+    @media only screen and (max-width: 900px) {
+        font-size: 58%;
+    }
 }
 
 body {
