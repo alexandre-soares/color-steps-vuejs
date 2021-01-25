@@ -165,6 +165,10 @@ $bg: #2c3e50;
         top: 2%;
         left: 50%;
         transform: translateX(-50%);
+
+        @media only screen and (max-width: 900px) {
+            display: none;
+        }
     }
 
     &__first-color,
